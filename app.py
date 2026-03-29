@@ -1,33 +1,20 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-from fastapi.responses import FileResponse
-import google.generativeai as genai
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+from google import genai
 import os
 
 app = FastAPI()
 
-# Load API key from environment variable
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
-model = genai.GenerativeModel("gemini-2.5-flash")
-
-class Chat(BaseModel):
-    message: str
-
-@app.get("/")
-def home():
-    return FileResponse("index.html")
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 @app.post("/chat")
-def chat(data: Chat):
+async def chat(request: Request):
+    data = await request.json()
+    prompt = data["message"]
 
-    prompt = f"""
-You are a friendly AI companion who talks casually and supportively.
+    response = client.models.generate_content(
+        model="gemini-1.5-flash",
+        contents=prompt,
+    )
 
-User: {data.message}
-Assistant:
-"""
-
-    response = model.generate_content(prompt)
-
-    return {"reply": response.text}
+    return JSONResponse({"reply": response.text})
