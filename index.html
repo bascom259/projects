@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Gemini Friend 🤖</h2>
+
+<input id="msg" placeholder="Talk to me">
+<button onclick="send()">Send</button>
+
+<p id="reply"></p>
+
+<script>
+async function send() {
+    let msg = document.getElementById("msg").value;
+
+    let res = await fetch("/chat", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({message:msg})
+    });
+
+    let data = await res.json();
+    document.getElementById("reply").innerText = data.reply;
+}
+</script>
+
+</body>
+</html>
