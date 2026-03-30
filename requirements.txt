@@ -1,5 +1,5 @@
 fastapi
-uvicorn[standard]
-google-genai
+uvicorn
 jinja2
 python-dotenv
+google-genai
