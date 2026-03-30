@@ -37,7 +37,7 @@ class ChatRequest(BaseModel):
 async def chat(req: ChatRequest):
 
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         contents=f"You are a friendly AI companion.\nUser: {req.message}"
     )
 
