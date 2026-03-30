@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LLM Friend</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #chat-container {
+            width: 400px;
+            height: 600px;
+            background: #1e293b;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        #chat {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .msg {
+            margin: 8px;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .user {
+            background: #2563eb;
+            text-align: right;
+        }
+
+        .bot {
+            background: #334155;
+            text-align: left;
+        }
+
+        input {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button {
+            margin-top: 5px;
+            padding: 10px;
+            background: #22c55e;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="chat-container">
+    <div id="chat"></div>
+
+    <input id="message" placeholder="Talk to your AI friend..." />
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+
+async function sendMessage() {
+
+    const input = document.getElementById("message");
+    const chat = document.getElementById("chat");
+
+    const message = input.value;
+    if (!message) return;
+
+    chat.innerHTML += `<div class="msg user">${message}</div>`;
+    input.value = "";
+
+    const response = await fetch("/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message })
+    });
+
+    const data = await response.json();
+
+    chat.innerHTML += `<div class="msg bot">${data.reply}</div>`;
+    chat.scrollTop = chat.scrollHeight;
+}
+
+</script>
+
+</body>
+</html>
