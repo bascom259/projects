@@ -3,23 +3,17 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 import os
-
-from dotenv import load_dotenv
 from google import genai
 
-# Load environment variables
-load_dotenv()
+app = FastAPI()
+
+# HTML templates folder
+templates = Jinja2Templates(directory="templates")
 
 # Gemini client
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-app = FastAPI()
-
-# Tell FastAPI where HTML files exist
-templates = Jinja2Templates(directory="templates")
-
-
-# ---------- Serve Website ----------
+# ---------------- HOME PAGE ----------------
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse(
@@ -27,18 +21,15 @@ async def home(request: Request):
         {"request": request}
     )
 
-
-# ---------- Chat API ----------
+# ---------------- CHAT API ----------------
 class ChatRequest(BaseModel):
     message: str
 
-
 @app.post("/chat")
 async def chat(req: ChatRequest):
-
     response = client.models.generate_content(
         model="gemini-2.5-flash",
-        contents=f"You are a friendly AI companion.\nUser: {req.message}"
+        contents=req.message
     )
 
     return {"reply": response.text}
